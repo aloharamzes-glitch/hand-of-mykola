@@ -75,17 +75,24 @@ client.on('guildMemberAdd', async (member) => {
       ],
     });
 
-    await channel.send({
-      content: `👋 ${member}\n❓ Питання 1`,
-      components: [row1],
-    });
-
     setTimeout(async () => {
-      if (!member.roles.cache.has(ROLE_ID)) {
-        await member.kick('таймер');
-        channel.delete().catch(() => {});
+  try {
+    const freshMember = await member.guild.members.fetch(member.id).catch(() => null);
+    if (!freshMember) return;
+
+    if (!freshMember.roles.cache.has(ROLE_ID)) {
+      if (freshMember.kickable) {
+        await freshMember.kick('таймер');
       }
-    }, 5 * 60 * 1000);
+    }
+
+    if (channel && channel.deletable) {
+      await channel.delete().catch(() => {});
+    }
+  } catch (e) {
+    console.error('Timeout error:', e);
+  }
+}, 5 * 60 * 1000);
 
   } catch (err) {
     console.error(err);
