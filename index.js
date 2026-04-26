@@ -24,7 +24,7 @@ const TOKEN = process.env.TOKEN;
 const ROLE_ID = '1497743227548209242';
 const VERIFY_CATEGORY_ID = '1497944849024811048';
 const LOG_CHANNEL_ID = '1497946515036045454';
-const MIKOLA_ID = "380348086532440065";
+const MIKOLA_ID = "303580298703142913";
 
 // --- КНОПКИ ---
 const row1 = new ActionRowBuilder().addComponents(
