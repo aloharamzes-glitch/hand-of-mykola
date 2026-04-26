@@ -33,8 +33,8 @@ const row1 = new ActionRowBuilder().addComponents(
 );
 
 const row2 = new ActionRowBuilder().addComponents(
-  new ButtonBuilder().setCustomId('q2_yes').setLabel('Так').setStyle(ButtonStyle.Success),
-  new ButtonBuilder().setCustomId('q2_no').setLabel('Ні').setStyle(ButtonStyle.Danger),
+  new ButtonBuilder().setCustomId('q2_yes').setLabel('Бо захтів').setStyle(ButtonStyle.Success),
+  new ButtonBuilder().setCustomId('q2_no').setLabel('Я не знаю').setStyle(ButtonStyle.Danger),
 );
 
 const row3 = new ActionRowBuilder().addComponents(
@@ -50,7 +50,7 @@ function confirmRow() {
 }
 
 // --- READY ---
-client.once('ready', () => {
+client.on('clientReady', () => {
   console.log(`✅ Бот запущений як ${client.user.tag}`);
 });
 
@@ -99,7 +99,7 @@ client.on('messageCreate', async (message) => {
   // verify
   if (message.content === '!verify') {
     return message.channel.send({
-      content: '❓ Питання 1',
+      content: 'Мієш мнєцкати?',
       components: [row1],
     });
   }
@@ -171,7 +171,7 @@ client.on('interactionCreate', async (interaction) => {
   const logChannel = interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
 
   if (interaction.customId === 'q1_yes') {
-    return interaction.update({ content: '❓ Питання 2', components: [row2] });
+    return interaction.update({ content: 'А хулі ти сюда зайшов?', components: [row2] });
   }
 
   if (interaction.customId === 'q1_no') {
@@ -179,7 +179,7 @@ client.on('interactionCreate', async (interaction) => {
   }
 
   if (interaction.customId === 'q2_yes') {
-    return interaction.update({ content: '❓ Питання 3', components: [row3] });
+    return interaction.update({ content: 'Будеш мнєцкав мені?', components: [row3] });
   }
 
   if (interaction.customId === 'q2_no') {
