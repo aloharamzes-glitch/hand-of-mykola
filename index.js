@@ -1,4 +1,4 @@
-require('dotenv').config(); // 🔥 ВАЖЛИВО
+require('dotenv').config();
 
 const {
   Client,
@@ -75,72 +75,78 @@ client.on('guildMemberAdd', async (member) => {
       ],
     });
 
+    // 🔥 ОСЬ ГОЛОВНЕ — ВІДПРАВКА ВЕРИФІКАЦІЇ
+    await channel.send({
+      content: `🔐 ${member}, почнемо перевірку`,
+      components: [row1]
+    });
+
+    // ⏱ таймер
     setTimeout(async () => {
-  try {
-    const freshMember = await member.guild.members.fetch(member.id).catch(() => null);
-    if (!freshMember) return;
+      try {
+        const freshMember = await member.guild.members.fetch(member.id).catch(() => null);
+        if (!freshMember) return;
 
-    if (!freshMember.roles.cache.has(ROLE_ID)) {
-      if (freshMember.kickable) {
-        await freshMember.kick('таймер');
+        if (!freshMember.roles.cache.has(ROLE_ID)) {
+          if (freshMember.kickable) {
+            await freshMember.kick('таймер');
+          }
+        }
+
+        if (channel && channel.deletable) {
+          await channel.delete().catch(() => {});
+        }
+      } catch (e) {
+        console.error('Timeout error:', e);
       }
-    }
-
-    if (channel && channel.deletable) {
-      await channel.delete().catch(() => {});
-    }
-  } catch (e) {
-    console.error('Timeout error:', e);
-  }
-}, 5 * 60 * 1000);
+    }, 5 * 60 * 1000);
 
   } catch (err) {
     console.error(err);
   }
 });
 
-// --- КОМАНДИ ---
-});
-
+// --- КНОПКИ ---
 client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isButton()) return;
+  if (!interaction.isButton()) return;
 
-    const member = interaction.member;
-    const logChannel = interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
+  const member = interaction.member;
+  const logChannel = interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
 
-    if (interaction.customId === 'q1_yes') {
-        return interaction.update({ content: '🔒 хулі ти сюда зайшов?', components: [row2] });
-    }
+  if (interaction.customId === 'q1_yes') {
+    return interaction.update({ content: '🔒 хулі ти сюда зайшов?', components: [row2] });
+  }
 
-    if (interaction.customId === 'q1_no') {
-        return interaction.update({ content: '🔒 хулі ти тут?', components: [confirmRow()] });
-    }
+  if (interaction.customId === 'q1_no') {
+    return interaction.update({ content: '🔒 хулі ти тут?', components: [confirmRow()] });
+  }
 
-    if (interaction.customId === 'q2_yes') {
-        return interaction.update({ content: 'Будеш мнєцкав мені?', components: [row3] });
-    }
+  if (interaction.customId === 'q2_yes') {
+    return interaction.update({ content: 'Будеш мнєцкав мені?', components: [row3] });
+  }
 
-    if (interaction.customId === 'q2_no') {
-        return interaction.update({ content: 'Добре думай', components: [confirmRow()] });
-    }
+  if (interaction.customId === 'q2_no') {
+    return interaction.update({ content: 'Добре думай', components: [confirmRow()] });
+  }
 
-    if (interaction.customId === 'q3_yes') {
-        const role = interaction.guild.roles.cache.get(ROLE_ID);
-        if (role) await member.roles.add(role);
+  if (interaction.customId === 'q3_yes') {
+    const role = interaction.guild.roles.cache.get(ROLE_ID);
+    if (role) await member.roles.add(role);
 
-        logChannel?.send(`✅ ${member.user.tag} пройшов`);
-        await interaction.channel.delete().catch(() => {});
-    }
+    logChannel?.send(`✅ ${member.user.tag} пройшов`);
+    await interaction.channel.delete().catch(() => {});
+  }
 
-    if (interaction.customId === 'q3_no') {
-        return interaction.update({ content: '⚠️ Пиздун', components: [confirmRow()] });
-    }
+  if (interaction.customId === 'q3_no') {
+    return interaction.update({ content: '⚠️ Пиздун', components: [confirmRow()] });
+  }
 
-    if (interaction.customId === 'confirm_kick') {
-        await member.kick('відмова');
-        logChannel?.send(`❌ ${member.user.tag} кік`);
-        await interaction.channel.delete().catch(() => {});
-    }
+  if (interaction.customId === 'confirm_kick') {
+    await member.kick('відмова');
+    logChannel?.send(`❌ ${member.user.tag} кік`);
+    await interaction.channel.delete().catch(() => {});
+  }
 });
+
 // 🔥 ЗАПУСК
 client.login(TOKEN);
